@@ -6,6 +6,7 @@ const studentSchema = new mongoose.Schema({
    age: {type: Number},
    email: {type: String, required: true},
    password: {type: String, required: true},
+   walletBalance: {type: Number, default: 0 }
 
 })
 

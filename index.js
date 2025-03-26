@@ -120,6 +120,7 @@ app.post("/rrr", (request, response)=>{
  
 
     // Real CRUD
+    // Create
       app.post("/register", async (request, response)=>{
         const {firstName, lastName, age, email, password } = request.body
         if(!email){
@@ -138,12 +139,76 @@ app.post("/rrr", (request, response)=>{
             user: newUser
         })
       })   
-
+      //Get All
       app.get("/students", async (request, response)=>{
         const allStudents = await Students.find()
         return response.status(200).json({
             message:"Successful", 
             count: allStudents.length,
             allStudents
+        }) 
+      })  
+
+      // Get One
+      app.get("/one-Student/:id", async (request, response)=>{
+        const{ id } = request.params 
+        const students = await Students.findById(id)
+
+        if(!students){
+            return response.status(404).json({message: "Student account not found"})
+        }
+       return response.status(200).json({message:"Successful", students})
+      })
+  
+      //Update One
+     app.put("/edit-student/:id", async(request, response)=>{
+       const {id} = request.params
+       const{firstName, lastName} = request.body
+       const updatedUser = await Students.findByIdAndUpdate(
+        id,
+        {firstName, lastName},
+        {new: true}
+    )
+    return response.status(200).json({
+        message: "Successful",
+        user: updatedUser
+    })
+
+       //const updatedUserrr = await Students.findOneAndUpdate()
+
+
+       //const{email, phoneNumber}= request.body
+     })
+
+
+
+
+      //Delete One
+
+      app.delete("/delete-student/:id", async (request, response) =>{
+        const{ id } = request.params
+
+        const deletedStudent = await Students.findByIdAndDelete(id)
+
+        return response.status(200).json({message: "Successful"})
+      })
+
+
+      //fund wallet
+
+      app.post("/fund-wallet", async(request, response)=>{
+        const {email, amount} = request.body
+
+        const user = await Students.findOne({email})
+        if(!user){
+            return response.status(404).json({message: "Use Account not found"})
+        }
+        user.walletBalance += Number(amount) 
+        await user.save()
+
+        return response.status(200).json({
+            message: "Successful",
+            user
         })
-      }) 
+
+      })
